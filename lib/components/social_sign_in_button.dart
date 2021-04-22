@@ -3,13 +3,15 @@ import 'package:time_tracker/components/custom_raised_button.dart';
 
 class SocialSignInButton extends CustomRaisedButton {
   SocialSignInButton({
-    String text,
-    String assetName,
+    @required String text,
+    @required String assetName,
     Color color,
     Color textColor,
-    Function onPressed,
+    @required Function onPressed,
     Widget child,
-  }) : super(
+  })  : assert(text != null),
+        assert(assetName != null),
+        super(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
