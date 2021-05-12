@@ -1,9 +1,21 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:time_tracker/components/sign_in_button.dart';
-import 'package:time_tracker/components/custom_raised_button.dart';
 import 'package:time_tracker/components/social_sign_in_button.dart';
 
 class SignInPage extends StatelessWidget {
+  const SignInPage({Key key, @required this.onSignIn}) : super(key: key);
+  final void Function(User) onSignIn;
+
+  Future<void> _signInAnonymously() async {
+    try {
+      final userCredentials = await FirebaseAuth.instance.signInAnonymously();
+      onSignIn(userCredentials.user);
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,7 +74,7 @@ class SignInPage extends StatelessWidget {
           ),
           SignInButton(
             text: 'Go anonymous',
-            onPressed: () {},
+            onPressed: _signInAnonymously,
             color: Color(0xFFf2d675),
             textColor: Colors.black87,
           ),
