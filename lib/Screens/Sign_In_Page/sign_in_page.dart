@@ -15,6 +15,14 @@ class SignInPage extends StatelessWidget {
     }
   }
 
+  Future<void> _signInWithFacebook() async {
+    try {
+      await auth.signInWithFacebook();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   Future<void> _signInAnonymously() async {
     try {
       await auth.signInAnonymously();
@@ -63,7 +71,7 @@ class SignInPage extends StatelessWidget {
           SocialSignInButton(
             assetName: 'images/facebook-logo.png',
             text: 'Sign up with Facebook',
-            onPressed: () {},
+            onPressed: _signInWithFacebook,
             color: Color(0xFF334D92),
             textColor: Colors.white,
           ),
