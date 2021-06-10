@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:time_tracker/Screens/Sign_In_Page/validators.dart';
+import 'package:time_tracker/components/show_alert_dialog.dart';
 import 'package:time_tracker/components/sign_in_button.dart';
 import 'package:time_tracker/constans.dart';
 import 'package:time_tracker/services/auth.dart';
@@ -39,7 +42,12 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       }
       Navigator.pop(context);
     } catch (e) {
-      print(e.toString());
+      showAlertDialog(
+        context,
+        title: 'Sign in failed',
+        content: e.toString(),
+        defaultAcctiontext: 'Ok',
+      );
     } finally {
       setState(() {
         _isLoading = false;
