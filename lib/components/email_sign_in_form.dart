@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_tracker/Screens/Sign_In_Page/validators.dart';
 import 'package:time_tracker/components/show_alert_dialog.dart';
+import 'package:time_tracker/components/show_alert_dialogue.dart';
 import 'package:time_tracker/components/sign_in_button.dart';
 import 'package:time_tracker/constans.dart';
+import 'package:time_tracker/services/auth.dart';
 
 enum EmailSignInFormType { signIn, register }
 
@@ -26,13 +29,22 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   bool _submitted = false;
   bool _isLoading = false;
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
+
   void _submit() async {
     setState(() {
       _submitted = true;
       _isLoading = true;
     });
     try {
-      final auth = Provider.of(context, listen: false);
+      final auth = Provider.of<AuthBase>(context, listen: false);
 
       if (_formType == EmailSignInFormType.signIn) {
         await auth.signInWithEmailAndPassword(_email, _password);
@@ -40,12 +52,11 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
         await auth.createUserWithEmailAndPassword(_email, _password);
       }
       Navigator.pop(context);
-    } catch (e) {
-      showAlertDialog(
+    } on FirebaseAuthException catch (e) {
+      showExeptionAlertDialogue(
         context,
         title: 'Sign in failed',
-        content: e.toString(),
-        defaultAcctiontext: 'Ok',
+        exception: e,
       );
     } finally {
       setState(() {
@@ -65,15 +76,11 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
     _passwordController.clear();
   }
 
-  void _emailOnEditingcomplete() {
+  void _emailEditingComplete() {
     final newFocus = widget.emailValidator.isValid(_email)
         ? _passwordFocusNode
         : _emailFocusNode;
     FocusScope.of(context).requestFocus(newFocus);
-  }
-
-  void _updateState() {
-    setState(() {});
   }
 
   List<Widget> _buildChildren() {
@@ -135,7 +142,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       keyboardType: TextInputType.emailAddress,
       textInputAction: TextInputAction.next,
       onChanged: (email) => _updateState(),
-      onEditingComplete: _emailOnEditingcomplete,
+      onEditingComplete: _emailEditingComplete,
     );
   }
 
@@ -166,5 +173,9 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
           mainAxisSize: MainAxisSize.min,
           children: _buildChildren(),
         ));
+  }
+
+  void _updateState() {
+    setState(() {});
   }
 }
